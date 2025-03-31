@@ -12,8 +12,8 @@
         "bootmagic": false,
         "mousekey": false,
         "extrakey": true,
-        "console": true,
-        "rgblight": true,
+        "console": false,
+        "rgblight": false,
         "encoder": true
     },
     "qmk": {
@@ -53,6 +53,9 @@
     },
     "ws2812": {
         "pin": "C7"
+    },
+    "build": {
+        "lto": true
     },
     "processor": "atmega32u2",
     "bootloader": "atmel-dfu",

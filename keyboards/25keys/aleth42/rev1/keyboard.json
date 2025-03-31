@@ -9,19 +9,14 @@
         "device_version": "0.0.1"
     },
     "features": {
-        "bootmagic": true,
+        "bootmagic": false,
         "mousekey": false,
         "extrakey": true,
-        "console": true,
+        "console": false,
         "backlight": true,
-        "rgblight": true,
-        "encoder": true
-    },
-    "qmk": {
-        "locking": {
-            "enabled": true,
-            "resync": true
-        }
+        "rgblight": false,
+        "encoder": true,
+        "encoder_map": true
     },
     "matrix_pins": {
         "cols": ["D5", "D3", "D2", "D1", "D0", "D6", "D4", "F7", "F0", "F1", "F4"],
@@ -59,6 +54,9 @@
         "pin": "C6",
         "levels": 8,
         "breathing": true
+    },
+    "build": {
+        "lto": true
     },
     "processor": "atmega32u4",
     "bootloader": "atmel-dfu",
