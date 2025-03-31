@@ -1,1 +1,1 @@
-DEFAULT_FOLDER = 25keys/aleth42/rev1
+DEFAULT_FOLDER = 25keys/aleth42/rev2_2
