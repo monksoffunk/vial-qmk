@@ -1,4 +1,4 @@
-/* Copyright 2020 monksoffunk
+/* Copyright 2025 monksoffunk
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
+#include "../common/40_keymap.h"
 
 // Defines names for use in layer keycodes and the keymap
 enum layer_names {
@@ -21,130 +22,47 @@ enum layer_names {
     _LOWER,
     _RAISE,
     _ADJUST,
-};
-
-// Defines the keycodes used by our macros in process_record_user
-enum custom_keycodes {
-    QWERTY = SAFE_RANGE,
-    LOWER,
-    RAISE,
-    ADJUST,
+    _EXTRA
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
- /* Default Layer
-     * ,-----------------------------------------------------------.
-     * | Esc|  Q |  W |  E |  R |  T |  Y |  U |  I |  O |  P | BS |
-     * |-----------------------------------------------------------|
-     * | Tab |  A |  S |  D |  F |  G |  H |  J |  K |  L | Ent    |
-     * |-----------------------------------------------------------|
-     * | LSft   |  Z |  X |  C |  V |  B |  N |  M |  , |  . |fn(/)|
-     * |-----------------------------------------------------------|
-     * | LCtl | LAlt| LGui|  spc fn0  |  spc fn1    |RGui|RAlt|RCtl|
-     * `-----------------------------------------------------------'
- */
-    [_QWERTY] = LAYOUT(
-        KC_ESC,  KC_Q,   KC_W,   KC_E,   KC_R,   KC_T,   KC_Y,   KC_U,   KC_I,    KC_O,    KC_P,   KC_BSPC,
-        KC_TAB,  KC_A,   KC_S,   KC_D,   KC_F,   KC_G,   KC_H,   KC_J,   KC_K,    KC_L,    KC_ENT,
-        KC_LSFT, KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,   KC_N,   KC_M,   KC_COMM, KC_DOT,  LT(_ADJUST, KC_SLSH),
-        KC_LCTL, KC_LALT   , KC_LGUI, LT(_LOWER, KC_SPC),   LT(_RAISE, KC_SPC), KC_RGUI, KC_RALT, KC_RCTL
-        ),
+    [_QWERTY] = LAYOUT_wrapper(
+        __________40_DEFAULT_1__________,
+        __________40_DEFAULT_2__________,
+        __________40_DEFAULT_3__________,
+        __________40_DEFAULT_4__________),
 
- /* Lower Layer
-     * ,-----------------------------------------------------------.
-     * |  ~ |  ! |  @ |  # |  $ |  % |  ^ |  & |  * |  ( |  ) | Del|
-     * |-----------------------------------------------------------|
-     * |        |    |    |    |    |     | _ | + | { | } |  Pipe  |
-     * |-----------------------------------------------------------|
-     * |          |    |    |    |    |    |   | ;  | '  | Up |    |
-     * |-----------------------------------------------------------|
-     * |     |    |     |           |             |Left|Down|Right |
-     * `-----------------------------------------------------------'
-     */
-    [_LOWER] = LAYOUT(
-        KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_DEL,
-		_______, _______, _______, _______, _______, _______, KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_PIPE,
-		_______, _______, _______, _______, _______, _______, _______, KC_SCLN, KC_QUOT, KC_UP,   _______,
-		_______, _______, _______, _______, _______, KC_LEFT, KC_DOWN, KC_RGHT
-		),
+    [_LOWER] = LAYOUT_wrapper(
+        ___________40_LOWER_1___________,
+        ___________40_LOWER_2___________,
+        ___________40_LOWER_3___________,
+        ___________40_LOWER_4___________),
 
-	/* Raise Layer
-     * ,-----------------------------------------------------------.
-     * |  ` |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 |  0 | Del|
-     * |-----------------------------------------------------------|
-     * |  F1   | F2  | F3 | F4 | F5 |  F6 | - | = | [ | ] |  Pipe  |
-     * |-----------------------------------------------------------|
-     * |    F7    | F8 | F9 | F10| F11| F12|  \ |  \ |   |    |    |
-     * |-----------------------------------------------------------|
-     * |     |    |     |           |             |     |    |     |
-     * `-----------------------------------------------------------'
-     */
-    [_RAISE] = LAYOUT(
-        KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_DEL,
-		KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_BSLS,
-		KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_NUHS, KC_NUBS, _______, _______, _______,
-		_______, _______, _______, _______, _______, _______, _______, _______
-		),
+    [_RAISE] = LAYOUT_wrapper(
+        ___________40_RAISE_1___________,
+        ___________40_RAISE_2___________,
+        ___________40_RAISE_3___________,
+        ___________40_RAISE_4___________),
 
-	/* Adjust Layer
-     * ,-----------------------------------------------------------.
-     * |Mute| F1 | F2 | F3 | F4 | F5 | F6 | F7 | F8 | F9 | F10|F11 |
-     * |-----------------------------------------------------------|
-     * |       |BTOG |BSTP|BINC| MAC|RGBTOG|HUI|WIN|SAI|VAI|  F12  |
-     * |-----------------------------------------------------------|
-     * |   Caps   |Reset|BBRE|BDEC|    |RMOD|HUD |   |SAD|VAD |    |
-     * |-----------------------------------------------------------|
-     * |SLEEP|    |     |           |             |     |    |     |
-     * `-----------------------------------------------------------'
-      */
-    [_ADJUST] = LAYOUT(
-        KC_MUTE, KC_F1,   KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11,
-		_______, BL_TOGG, BL_STEP, BL_UP,   AG_NORM,  UG_TOGG, UG_HUEU, AG_SWAP, UG_SATU, UG_VALU,  KC_F12,
-		KC_CAPS, QK_BOOT, BL_BRTG, BL_DOWN, _______,  UG_NEXT, UG_HUED, _______, UG_SATD, UG_VALD,  _______,
-		KC_SLEP, _______, _______, _______, _______, _______, _______, _______
-		),
+    [_ADJUST] = LAYOUT_wrapper(
+        __________40_ADJUST_1___________,
+        __________40_ADJUST_2___________,
+        __________40_ADJUST_3___________,
+        __________40_ADJUST_4___________),
+
+    [_EXTRA] = LAYOUT_wrapper(
+        __________40_EXTRA_1___________,
+        __________40_EXTRA_2___________,
+        __________40_EXTRA_3___________,
+        __________40_EXTRA_4___________)
 };
 
-bool encoder_update_user(uint8_t index, bool clockwise) {
-    if (index == 0) { /* Left encoder */
-        switch (get_highest_layer(layer_state)) {
-            case _QWERTY:
-                if (clockwise) {
-                    tap_code(KC_TAB);
-                } else {
-                    tap_code16(S(KC_TAB));
-                }
-                break;
-            case _RAISE:
-                if (clockwise) {
-                //    tap_code(KC_VOLU);
-                    if(keymap_config.swap_lalt_lgui==false){
-                        tap_code(KC_LNG2);
-                    }else {
-                        tap_code16(A(KC_GRV));
-                    }
-                } else {
-                    if(keymap_config.swap_lalt_lgui==false){
-                    tap_code(KC_LNG1);
-                    } else {
-                        tap_code16(A(KC_GRV));
-                    }
-                }
-                break;
-            case _ADJUST:
-                if (clockwise) {
-                    tap_code(KC_VOLU);
-                } else {
-                    tap_code(KC_VOLD);
-            }
-        }
-
-    } else if (index == 1) { /* Right encoder */
-        if (clockwise) {
-            tap_code(KC_PGDN);
-        } else {
-            tap_code(KC_PGUP);
-        }
-    }
-    return true;
-}
+#if defined(ENCODER_MAP_ENABLE)
+const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
+    [0] =   ENCODER_CCW_CW_0,
+    [1] =   ENCODER_CCW_CW_1,
+    [2] =   ENCODER_CCW_CW_2,
+    [3] =   ENCODER_CCW_CW_3,
+    [4] =   ENCODER_CCW_CW_4
+};
+#endif
