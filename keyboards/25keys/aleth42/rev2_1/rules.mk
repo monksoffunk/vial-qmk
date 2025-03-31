@@ -1,0 +1,10 @@
+ENCODER_HOT_SWAP_ENABLE = no
+
+ifeq ($(strip $(ENCODER_HOT_SWAP_ENABLE)), yes)
+	OPT_DEFS += -DENCODER_HOT_SWAP_ENABLE
+	OPT_DEFS += -DMATRIX_REMAP_ENABLE
+	SRC += ../common/matrix_remap.c
+endif
+
+SRC += ../common/encoder_matrix.c
+SRC += ../common/os_key_mapping.c
