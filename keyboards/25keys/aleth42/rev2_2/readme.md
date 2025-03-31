@@ -1,4 +1,4 @@
-# ALETH42 rev2.1
+# ALETH42 rev2.2
 
 ![ALETH42](https://i.imgur.com/6hJVBQl.png)
 
@@ -10,6 +10,6 @@
 
 Make example for this keyboard (after setting up your build environment):
 
-    make aleth42:default
+    qmk compile -kb 25keys/aleth42/rev2_2 -km default
 
 See the [build environment setup](https://docs.qmk.fm/#/getting_started_build_tools) and the [make instructions](https://docs.qmk.fm/#/getting_started_make_guide) for more information. Brand new to QMK? Start with our [Complete Newbs Guide](https://docs.qmk.fm/#/newbs).
