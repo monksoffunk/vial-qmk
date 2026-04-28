@@ -1,6 +1,6 @@
 # ALETH42 rev2.4 ortho
 
-![ALETH42 ORTHO](https://imgur.com/a/7c17YRg)
+![ALETH42 ORTHO](https://i.imgur.com/1Jl2bgV.jpeg)
 
 40% keyboard with rotary encoder (optional)
 
