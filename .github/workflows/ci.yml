@@ -21,7 +21,6 @@ jobs:
       uses: actions/checkout@v4
       with:
         persist-credentials: false
-        token: ${{ secrets.MONK_TOKEN }}
 
     - name: Verify Vial UID is unique per-keyboard
       run: python3 util/ci_vial_verify_uid.py
@@ -38,7 +37,6 @@ jobs:
       uses: actions/checkout@v4
       with:
         persist-credentials: false
-        token: ${{ secrets.MONK_TOKEN }}        
         submodules: recursive
 
     - name: Build
@@ -77,7 +75,6 @@ jobs:
       uses: actions/checkout@v4
       with:
         persist-credentials: false
-        token: ${{ secrets.MONK_TOKEN }}
         submodules: recursive
 
     - name: Build
