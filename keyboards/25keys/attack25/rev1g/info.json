@@ -5,7 +5,6 @@
     "bootloader": "caterina",
     "diode_direction": "ROW2COL",
     "url": "http://www.sho-k.co.uk/tech/attack25",
-    "maintainer": "monksoffunk",
     "width": 7,
     "height": 5,
     "layouts": {
