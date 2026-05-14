@@ -13,6 +13,9 @@
 #define NUMLOCK_COLOR_LAYOUT_OPTION_MASK 0x0F
 #define ALL_LEDS_OFF_LAYOUT_OPTION_SHIFT 4
 #define ALL_LEDS_OFF_LAYOUT_OPTION_MASK 0x01
+#define DISABLE_WIN_NUMLOCK_OPTION_SHIFT 5
+#define DISABLE_WIN_NUMLOCK_OPTION_MASK 0x01
+#define UNDERGLOW_SOFT_OFF_CUSTOM_CONFIG_MASK 0x01
 
 extern matrix_row_t matrix[MATRIX_ROWS]; // debounced values
 user_config_t       user_config;
@@ -22,6 +25,7 @@ static uint16_t     numcheck_timer;
 static uint8_t      numlock_color_choice;
 static bool         underglow_soft_off;
 static bool         all_leds_force_off;
+static bool         disable_win_numlock;
 
 static void set_numlock_indicator_color(void) {
     if (numlock_color_choice == 1) {
@@ -49,13 +53,20 @@ static void set_numlock_indicator_color(void) {
     }
 }
 
+static void apply_unlock_numlock(void) {
+    if (disable_win_numlock && numlock_mode) {
+        tap_code(KC_NUM_LOCK);
+        numlock_mode = false;
+    }
+}
+
 static void refresh_numlock_indicator(void) {
     if (all_leds_force_off) {
         rgblight_setrgb_at(0, 0, 0, LED_NUMLOCK_INDEX);
         return;
     }
 
-    if (user_config.mac_mode) {
+    if (user_config.mac_mode || disable_win_numlock) {
         if (numlock_mode) {
             set_numlock_indicator_color();
         } else {
@@ -88,8 +99,10 @@ static void apply_underglow_state(void) {
 void via_set_layout_options_kb(uint32_t value) {
     numlock_color_choice = (value >> NUMLOCK_COLOR_LAYOUT_OPTION_SHIFT) & NUMLOCK_COLOR_LAYOUT_OPTION_MASK;
     all_leds_force_off   = (value >> ALL_LEDS_OFF_LAYOUT_OPTION_SHIFT) & ALL_LEDS_OFF_LAYOUT_OPTION_MASK;
+    disable_win_numlock  = (value >> DISABLE_WIN_NUMLOCK_OPTION_SHIFT) & DISABLE_WIN_NUMLOCK_OPTION_MASK;
     apply_underglow_state();
     refresh_numlock_indicator();
+    apply_unlock_numlock();
 }
 #endif
 
@@ -109,6 +122,12 @@ void keyboard_pre_init_kb(void) {
 void keyboard_post_init_kb(void) {
     //    rgblight_set_clipping_range(LED_RGBLIGHT_START_INDEX, 6);
     rgblight_set_effect_range(LED_RGBLIGHT_START_INDEX, 6);
+#ifdef VIA_ENABLE
+    underglow_soft_off = (eeprom_read_byte((void *)VIA_EEPROM_CUSTOM_CONFIG_ADDR) & UNDERGLOW_SOFT_OFF_CUSTOM_CONFIG_MASK);
+#endif
+    if (underglow_soft_off) {
+        apply_underglow_state();
+    }
     keyboard_post_init_user();
 }
 
@@ -119,6 +138,13 @@ void led_update_ports(led_t led_state) {
     } else {
         rgblight_sethsv_at(HSV_TEAL, LED_NUMLOCK_INDEX);
     }
+}
+
+void suspend_wakeup_init_kb(void) {
+    if (underglow_soft_off) {
+        apply_underglow_state();
+    }
+    suspend_wakeup_init_user();
 }
 
 bool process_detected_host_os_kb(os_variant_t os_type) {
@@ -139,7 +165,7 @@ bool process_detected_host_os_kb(os_variant_t os_type) {
 }
 
 static void numlock_state_check(void) {
-    if (!user_config.mac_mode) {
+    if (!user_config.mac_mode && !disable_win_numlock) {
         led_t led_state = host_keyboard_led_state();
         numlock_mode    = (led_state.num_lock && !IS_LAYER_ON(_NUMOFF));
     }
@@ -151,7 +177,7 @@ void matrix_scan_kb(void) {
     if (user_config.mac_mode && !numlock_init_done) {
         if (timer_elapsed(numcheck_timer) > 500) {
             if (!host_keyboard_led_state().num_lock) {
-                tap_code16(KC_NUM_LOCK);
+                tap_code(KC_NUM_LOCK);
             }
             numlock_init_done = true;
         }
@@ -168,11 +194,11 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
                 user_config.mac_mode = !user_config.mac_mode;
                 eeconfig_update_user(user_config.raw);
                 if (user_config.mac_mode && !numlock_mode) {
-                    tap_code16(KC_NUM_LOCK);
+                    tap_code(KC_NUM_LOCK);
                     layer_on(_NUMOFF);
                     default_layer_or(1UL << _NUMOFF);
                 } else if (!user_config.mac_mode && !numlock_mode) {
-                    tap_code16(KC_NUM_LOCK);
+                    tap_code(KC_NUM_LOCK);
                     layer_clear();
                     default_layer_xor(1UL << _NUMOFF);
                 }
@@ -180,7 +206,7 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             return false;
         case KC_NUM:
             if (record->event.pressed) {
-                if (user_config.mac_mode) {
+                if (user_config.mac_mode || disable_win_numlock) {
                     numlock_mode = !numlock_mode;
                     if (numlock_mode) {
                         layer_off(_NUMOFF);
@@ -199,10 +225,34 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
         case UG_TOGG:
             if (record->event.pressed) {
                 underglow_soft_off = !underglow_soft_off;
+#ifdef VIA_ENABLE
+                eeprom_update_byte((void *)VIA_EEPROM_CUSTOM_CONFIG_ADDR, underglow_soft_off ? UNDERGLOW_SOFT_OFF_CUSTOM_CONFIG_MASK : 0);
+#endif
                 apply_underglow_state();
                 refresh_numlock_indicator();
             }
             return false;
+        case KC_P0:
+        case KC_P1:
+        case KC_P2:
+        case KC_P3:
+        case KC_P4:
+        case KC_P5:
+        case KC_P6:
+        case KC_P7:
+        case KC_P8:
+        case KC_P9:
+        case KC_PDOT:
+            if (disable_win_numlock && numlock_mode) {
+                if (record->event.pressed) {
+                    tap_code(KC_NUM_LOCK);
+                    tap_code(keycode);
+                    tap_code(KC_NUM_LOCK);
+                    return false;
+                }
+            }
+            break;
+
         // case RGBRST:
         //     if (record->event.pressed) {
         //         eeconfig_update_rgblight_default();

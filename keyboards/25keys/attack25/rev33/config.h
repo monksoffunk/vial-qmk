@@ -13,4 +13,4 @@
 
 #define NUMLOCK_INDICATOR_COLOR HSV_GREEN
 
-//#define VIA_EEPROM_CUSTOM_CONFIG_SIZE 1 // Custom config starts after VIA's EEPROM usage
+#define VIA_EEPROM_CUSTOM_CONFIG_SIZE 1 // Custom config starts after VIA's EEPROM usage

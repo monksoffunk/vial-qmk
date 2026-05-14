@@ -67,7 +67,7 @@
             "christmas": false,
             "static_gradient": true,
             "rgb_test": false,
-            "alternating": true,
+            "alternating": false,
             "twinkle": true
         }
     },
