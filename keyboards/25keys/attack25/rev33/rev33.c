@@ -15,7 +15,6 @@
 #define ALL_LEDS_OFF_LAYOUT_OPTION_MASK 0x01
 #define DISABLE_WIN_NUMLOCK_OPTION_SHIFT 5
 #define DISABLE_WIN_NUMLOCK_OPTION_MASK 0x01
-#define UNDERGLOW_SOFT_OFF_CUSTOM_CONFIG_MASK 0x01
 
 extern matrix_row_t matrix[MATRIX_ROWS]; // debounced values
 user_config_t       user_config;
@@ -23,7 +22,6 @@ bool                numlock_mode      = true;
 bool                numlock_init_done = false;
 static uint16_t     numcheck_timer;
 static uint8_t      numlock_color_choice;
-static bool         underglow_soft_off;
 static bool         all_leds_force_off;
 static bool         disable_win_numlock;
 
@@ -87,7 +85,7 @@ static void apply_underglow_state(void) {
         rgblight_enable_noeeprom();
     }
 
-    if (all_leds_force_off || underglow_soft_off) {
+    if (all_leds_force_off || user_config.underglow_soft_off) {
         rgblight_timer_disable();
         rgblight_setrgb(0, 0, 0);
     } else {
@@ -109,6 +107,7 @@ void via_set_layout_options_kb(uint32_t value) {
 void eeconfig_init_kb(void) {
     user_config.raw      = 0;
     user_config.mac_mode = true;
+    user_config.underglow_soft_off = false;
     eeconfig_update_user(user_config.raw);
     eeconfig_init_user();
 }
@@ -122,10 +121,7 @@ void keyboard_pre_init_kb(void) {
 void keyboard_post_init_kb(void) {
     //    rgblight_set_clipping_range(LED_RGBLIGHT_START_INDEX, 6);
     rgblight_set_effect_range(LED_RGBLIGHT_START_INDEX, 6);
-#ifdef VIA_ENABLE
-    underglow_soft_off = (eeprom_read_byte((void *)VIA_EEPROM_CUSTOM_CONFIG_ADDR) & UNDERGLOW_SOFT_OFF_CUSTOM_CONFIG_MASK);
-#endif
-    if (underglow_soft_off) {
+    if (user_config.underglow_soft_off) {
         apply_underglow_state();
     }
     keyboard_post_init_user();
@@ -141,7 +137,7 @@ void led_update_ports(led_t led_state) {
 }
 
 void suspend_wakeup_init_kb(void) {
-    if (underglow_soft_off) {
+    if (user_config.underglow_soft_off) {
         apply_underglow_state();
     }
     suspend_wakeup_init_user();
@@ -224,10 +220,8 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             return !user_config.mac_mode;
         case UG_TOGG:
             if (record->event.pressed) {
-                underglow_soft_off = !underglow_soft_off;
-#ifdef VIA_ENABLE
-                eeprom_update_byte((void *)VIA_EEPROM_CUSTOM_CONFIG_ADDR, underglow_soft_off ? UNDERGLOW_SOFT_OFF_CUSTOM_CONFIG_MASK : 0);
-#endif
+                user_config.underglow_soft_off = !user_config.underglow_soft_off;
+                eeconfig_update_user(user_config.raw);
                 apply_underglow_state();
                 refresh_numlock_indicator();
             }

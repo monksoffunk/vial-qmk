@@ -46,6 +46,7 @@ typedef union {
   uint32_t raw;
   struct {
     bool mac_mode :1;
+    bool underglow_soft_off :1;
     uint8_t encoder_resolution : 3;
   };
 } user_config_t;
