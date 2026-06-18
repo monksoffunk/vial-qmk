@@ -5,6 +5,8 @@
 extern matrix_row_t matrix[MATRIX_ROWS]; // debounced values
 
 void keyboard_post_init_kb(void) {
+    wait_ms(500);
+    rgblight_set();
     keyboard_post_init_user();
 }
 

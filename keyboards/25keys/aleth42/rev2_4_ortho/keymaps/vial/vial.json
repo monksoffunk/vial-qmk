@@ -3,7 +3,7 @@
     "usb": {
         "vid": "0x2E8A",
         "pid": "0x10CE",
-        "device_version": "2.3.0"
+        "device_version": "2.4.0"
     },
     "lighting": "qmk_rgblight",
     "matrix": {
