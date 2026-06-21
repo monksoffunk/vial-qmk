@@ -5,8 +5,6 @@
 extern matrix_row_t matrix[MATRIX_ROWS]; // debounced values
 
 void keyboard_post_init_kb(void) {
-    wait_ms(500);
-    rgblight_set();
     keyboard_post_init_user();
 }
 
@@ -21,3 +19,10 @@ void matrix_scan_kb(void) {
     matrix_remap(matrix);
     matrix_scan_user();
 }
+
+#ifdef RGBLIGHT_ENABLE
+void matrix_init_kb(void) {
+    wait_ms(600); // wait for WS2812B init
+    matrix_init_user();
+}
+#endif
